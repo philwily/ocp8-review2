@@ -13,8 +13,7 @@ public class Writer2
 		int size = 0;
 		try
 		{
-			boolean newFile = false;
-			File file = new File("chapter5\\filewrite2.txt");
+			File file = new File("src\\chapter5\\filewrite2.txt");//new File("chapter5\\filewrite2.txt");
 			FileWriter fw = new FileWriter(file);
 			fw.write("howdy\nworld\n");
 			fw.flush();
@@ -28,6 +27,9 @@ public class Writer2
 				System.out.print(c);
 			}
 			fr.close();
+			
+			// clean-up
+			file.deleteOnExit();
 		}
 		catch (IOException ie)
 		{

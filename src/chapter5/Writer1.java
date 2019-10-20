@@ -17,6 +17,7 @@ public class Writer1
 			System.out.println("File created: " + newFile);
 			System.out.println("File exists: " + file.exists());
 			
+			// clean-up
 			newFile = file.delete();
 			System.out.println("File deleted: " + newFile);
 			System.out.println("File exists: " + file.exists());			

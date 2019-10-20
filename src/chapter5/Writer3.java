@@ -13,8 +13,7 @@ public class Writer3
 		int size = 0;
 		try
 		{
-			boolean newFile = false;
-			File file = new File("chapter5\\filewrite3.txt");
+			File file = new File("src\\chapter5\\filewrite3.txt");//new File("chapter5\\filewrite3.txt");
 			FileOutputStream fos = new FileOutputStream(file);
 			String s = "howdy\nworld\n";
 			fos.write(s.getBytes("UTF-8"));
@@ -29,6 +28,9 @@ public class Writer3
 				System.out.print((char)b);
 			}
 			fis.close();
+			
+			// clean-up
+			file.deleteOnExit();
 		}
 		catch (IOException ie)
 		{
