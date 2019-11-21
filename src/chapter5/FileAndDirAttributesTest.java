@@ -6,16 +6,26 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.DosFileAttributeView;
+import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Set;
 
-public class FileAndDirAttributesTest {
+public class FileAndDirAttributesTest 
+{
 
+	private static String OS = System.getProperty("os.name").toLowerCase();
+	
 	public static void main(String[] args) 
 	{
 		LocalDate localDate = LocalDate.of(2017, Month.JANUARY, 1);
@@ -84,6 +94,58 @@ public class FileAndDirAttributesTest {
 		{
 			e.printStackTrace();
 		}
+		
+		// dos attributes
+		if (OS.contains("win"))
+		{
+			try 
+			{
+				Files.setAttribute(file, "dos:readonly", true);
+				Files.setAttribute(file, "dos:hidden", true);
+				
+				DosFileAttributes dos = Files.readAttributes(file, DosFileAttributes.class);
+				System.out.println("Read Only: " + dos.isReadOnly());
+				System.out.println("Hidden: " + dos.isHidden());
+				
+				// other way:
+				DosFileAttributeView view = Files.getFileAttributeView(file, DosFileAttributeView.class);
+				view.setHidden(false);
+				view.setReadOnly(false);
+				
+				dos = Files.readAttributes(file, DosFileAttributes.class);
+				System.out.println("Read Only: " + dos.isReadOnly());
+				System.out.println("Hidden: " + dos.isHidden());
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		if (OS.contains("nix") || OS.contains("nux") || OS.contains("aix"))
+		{
+			try 
+			{
+				PosixFileAttributes posix = Files.readAttributes(file, PosixFileAttributes.class);
+				System.out.println(posix.permissions());
+				Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rw-r--r--");
+				Files.setPosixFilePermissions(file,  perms);
+				posix = Files.readAttributes(file, PosixFileAttributes.class);
+				System.out.println(posix.permissions());
+				
+				// other way
+				PosixFileAttributeView view = Files.getFileAttributeView(file, PosixFileAttributeView.class);
+				view.setPermissions(perms);
+				posix = Files.readAttributes(file, PosixFileAttributes.class);
+				System.out.println(posix.permissions());
+				System.out.println(posix.group());
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		
 		
 		//cleanup
 		try
